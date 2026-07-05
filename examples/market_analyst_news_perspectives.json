@@ -1,0 +1,113 @@
+{
+  "type": "prompt_chain",
+  "chain_id": "market_analyst_news_perspectives",
+  "version": "1.0",
+  "owner": "tmic-team",
+  "description": "輸入 news titles → 取得內文 → AI 摘要 → 樂觀/保守雙觀點（供市場分析師）",
+  "schedule": { "cron": "0 7 * * 1-5", "timezone": "Asia/Taipei", "catchup": false },
+  "defaults": {
+    "provider": "perplexity",
+    "model": "sonar-pro",
+    "temperature": 0.2,
+    "max_tokens": 4000,
+    "search_options": {}
+  },
+  "params": {
+    "news_titles": [
+      "TSMC 2nm 量產時程提前，CoWoS 產能同步擴張",
+      "美國宣布新一輪半導體出口管制清單",
+      "HBM4 認證進度：SK 海力士與三星競逐 NVIDIA 訂單"
+    ]
+  },
+  "stages": [
+    {
+      "id": "fetch_news_content",
+      "type": "ai_call",
+      "depends_on": [],
+      "model_override": { "search_options": { "search_recency_filter": "week" } },
+      "prompt": {
+        "system": "你是財經新聞研究助理。利用 web search 能力，針對給定的新聞標題找出對應報導的完整內容。",
+        "user": "以下是今日關注的新聞標題清單：\n{{ params.news_titles | tojson }}\n\n請針對每一則標題搜尋並取得該新聞的內文重點（300 字內，保留關鍵數字與人事物），一併附上來源 url 與發布時間。"
+      },
+      "output_schema": {
+        "type": "object",
+        "properties": {
+          "articles": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["title", "content", "url"],
+              "properties": {
+                "title": { "type": "string" },
+                "content": { "type": "string" },
+                "url": { "type": "string" },
+                "published_at": { "type": "string" }
+              }
+            }
+          }
+        }
+      },
+      "ui": { "x": 40, "y": 160 }
+    },
+    {
+      "id": "generate_summary",
+      "type": "ai_call",
+      "depends_on": ["fetch_news_content"],
+      "prompt": {
+        "system": "你是資深財經編輯，擅長將多篇新聞濃縮為決策者可以快速消化的摘要。",
+        "user": "以下是今日新聞內文：\n{{ stages.fetch_news_content.output.articles | tojson }}\n\n請針對每一則新聞產出 80 字內的 summary，並額外產出一段 150 字的 overall_digest 綜合今日重點。"
+      },
+      "output_schema": {
+        "type": "object",
+        "properties": {
+          "summaries": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["title", "summary"],
+              "properties": {
+                "title": { "type": "string" },
+                "summary": { "type": "string" }
+              }
+            }
+          },
+          "overall_digest": { "type": "string" }
+        }
+      },
+      "ui": { "x": 340, "y": 160 }
+    },
+    {
+      "id": "dual_perspective_analysis",
+      "type": "ai_call",
+      "depends_on": ["generate_summary"],
+      "prompt": {
+        "system": "你是提供給市場分析師的觀點引擎。你的任務不是給單一結論，而是針對同一事實提出兩種立場嚴謹、可辯護的解讀，幫助分析師建立自己的判斷。",
+        "user": "以下是今日新聞摘要：\n{{ stages.generate_summary.output | tojson }}\n\n請針對每一則新聞產出：\n1. optimistic_view（樂觀觀點）：這則新聞對市場/供應鏈/相關公司的正面解讀，指出上行機會與受惠者。\n2. conservative_view（保守觀點）：同一事實的風險面解讀，指出下行風險、不確定性與需要驗證的假設。\n3. watch_items：分析師後續應追蹤的 2-3 個具體指標或事件。\n\n兩種觀點都必須引用摘要中的具體事實，不得空泛。"
+      },
+      "output_schema": {
+        "type": "object",
+        "properties": {
+          "perspectives": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["title", "optimistic_view", "conservative_view"],
+              "properties": {
+                "title": { "type": "string" },
+                "optimistic_view": { "type": "string" },
+                "conservative_view": { "type": "string" },
+                "watch_items": { "type": "array", "items": { "type": "string" } }
+              }
+            }
+          }
+        }
+      },
+      "ui": { "x": 640, "y": 160 }
+    }
+  ],
+  "governance": {
+    "cost_budget_usd_per_run": 2.0,
+    "pii_detection": true,
+    "citation_capture": true
+  }
+}
