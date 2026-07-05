@@ -1,0 +1,18 @@
+services:
+  backend:
+    build: ./backend
+    environment:
+      - PERPLEXITY_API_KEY=${PERPLEXITY_API_KEY:-}   # 未設定則 dry-run 走 mock
+      # - DATABASE_URL=postgresql://user:pass@db:5432/bobatea
+    ports:
+      - "8000:8000"
+
+  # 前端為 next static export；建置後任何靜態伺服器皆可
+  frontend:
+    image: nginx:alpine
+    volumes:
+      - ./out:/usr/share/nginx/html/bobatea:ro
+    ports:
+      - "8080:80"
+    depends_on:
+      - backend
