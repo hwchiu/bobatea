@@ -6,8 +6,9 @@ import {
   simulateProxyResponse,
 } from "./backendFallback";
 
-// Backend endpoint — 統一 FastAPI。開發時走 next.config rewrites，部署時以 NEXT_PUBLIC_API_BASE 指定
-export const API_BASE = process.env.NEXT_PUBLIC_API_BASE ?? "";
+// Backend endpoint — GitHub Pages 版前端需直接呼叫 momo 的 HTTPS API；
+// 若要改回同源代理，可在建置時覆寫 NEXT_PUBLIC_API_BASE。
+export const API_BASE = process.env.NEXT_PUBLIC_API_BASE ?? "https://momo.hwchiu.com";
 const PROXY_URL = `${API_BASE}/api/bobatea/proxy`;
 
 function buildHeaders(config: RequestConfig): Record<string, string> {

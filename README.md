@@ -10,6 +10,14 @@
 
 Reference configs for that setup live in `deploy/`.
 
+For the GitHub Pages deployment, the frontend is built with:
+
+```text
+NEXT_PUBLIC_API_BASE=https://momo.hwchiu.com
+```
+
+That keeps the browser on HTTPS and lets the static UI call the server backend cross-origin. Do not point the GitHub-hosted frontend at `http://momo.hwchiu.com:80`, because browsers block mixed-content API calls from an HTTPS page.
+
 ### AI provider key
 
 If `PERPLEXITY_API_KEY` is not set for the backend service, AI dry-run calls still work but return the backend's built-in mock response.
