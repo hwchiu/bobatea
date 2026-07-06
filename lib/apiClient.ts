@@ -1,5 +1,10 @@
 // lib/apiClient.ts
 import type { RequestConfig, ApiResponse } from "./types";
+import {
+  isMissingBackendResponse,
+  isUnavailableBackendError,
+  simulateProxyResponse,
+} from "./backendFallback";
 
 // Backend endpoint — 統一 FastAPI。開發時走 next.config rewrites，部署時以 NEXT_PUBLIC_API_BASE 指定
 export const API_BASE = process.env.NEXT_PUBLIC_API_BASE ?? "";
@@ -63,6 +68,10 @@ function buildBody(config: RequestConfig): string | undefined {
 
 export async function executeRequest(config: RequestConfig): Promise<ApiResponse> {
   const start = Date.now();
+  const resolvedUrl = buildUrl(config);
+  const resolvedHeaders = buildHeaders(config);
+  const resolvedBody = buildBody(config);
+
   try {
     const res = await fetch(PROXY_URL, {
       method: "POST",
@@ -70,10 +79,30 @@ export async function executeRequest(config: RequestConfig): Promise<ApiResponse
       body: JSON.stringify(config),
     });
 
+    if (isMissingBackendResponse(res)) {
+      return simulateProxyResponse(
+        config,
+        resolvedUrl,
+        resolvedHeaders,
+        resolvedBody,
+        Date.now() - start,
+      );
+    }
+
     const durationMs = Date.now() - start;
     const data: ApiResponse = await res.json();
     return { ...data, durationMs };
   } catch (err: unknown) {
+    if (isUnavailableBackendError(err)) {
+      return simulateProxyResponse(
+        config,
+        resolvedUrl,
+        resolvedHeaders,
+        resolvedBody,
+        Date.now() - start,
+      );
+    }
+
     return {
       status: 0,
       statusText: "Network Error",

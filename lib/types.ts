@@ -68,6 +68,13 @@ export interface DagConfig {
   timeoutSeconds: number;
 }
 
+export interface ApiCrawlerSpec {
+  type: "api_crawler";
+  request: RequestConfig;
+  fields: SchemaField[];
+  dagConfig: DagConfig;
+}
+
 export interface SavedCrawler {
   id: string;
   name: string;
