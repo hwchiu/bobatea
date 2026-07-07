@@ -275,9 +275,14 @@ body {
 .pcs-toolbar { position: absolute; top: 10px; left: 10px; z-index: 5; display: flex; gap: 6px; }
 .pcs-btn {
   background: var(--bg-elevated); color: var(--text-primary);
-  border: 1px solid var(--border); border-radius: 5px;
-  padding: 5px 12px; cursor: pointer; font-size: 12px;
+  border: 1px solid var(--border); border-radius: 6px;
+  cursor: pointer; font-size: 12px;
+  /* 統一尺寸：同高、同最小寬度，icon+文字置中 */
+  height: 32px; min-width: 96px; padding: 0 14px;
+  display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+  white-space: nowrap;
 }
+.pcs-btn.icon-only { min-width: 32px; padding: 0; }
 .pcs-btn:hover { background: var(--bg-hover); }
 .pcs-btn.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
 .pcs-btn.danger { color: var(--danger); }
@@ -345,3 +350,41 @@ body {
 .pcs-node.t-transform .dot { background: var(--success); }
 .pcs-node.t-sink .dot { background: var(--warning); }
 .react-flow__attribution { display: none; }
+
+
+/* ── Settings：RWD ─────────────────────────────── */
+.st-layout { flex: 1; display: flex; min-height: 0; }
+.st-submenu { width: 232px; border-right: 1px solid var(--border); padding: 14px 10px;
+              background: var(--bg-surface); overflow-y: auto; flex-shrink: 0; }
+.st-main { flex: 1; overflow: auto; padding: 18px; }
+.st-toolbar { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; flex-wrap: wrap; }
+.st-tablewrap { border: 1px solid var(--border); border-radius: 8px; overflow-x: auto; }
+.st-table { width: 100%; border-collapse: collapse; font-size: 12.5px; min-width: 640px; }
+.st-card { border: 1px solid var(--border); border-radius: 8px; padding: 16px;
+           background: var(--bg-surface); max-width: 560px; }
+
+/* 語系切換（segmented，非下拉） */
+.lang-toggle { display: inline-flex; border: 1px solid var(--border); border-radius: 6px; overflow: hidden; }
+.lang-toggle button {
+  height: 30px; min-width: 44px; padding: 0 12px; border: none; cursor: pointer;
+  background: transparent; color: var(--text-secondary); font-size: 12px;
+}
+.lang-toggle button.active { background: var(--accent); color: #fff; font-weight: 600; }
+
+/* toggle switch（notifications 用） */
+.st-switch { position: relative; width: 38px; height: 20px; border-radius: 999px;
+             background: var(--border); cursor: pointer; border: none; flex-shrink: 0; }
+.st-switch::after { content: ""; position: absolute; top: 2px; left: 2px; width: 16px; height: 16px;
+                    border-radius: 50%; background: var(--text-secondary); transition: transform .15s; }
+.st-switch.on { background: var(--accent); }
+.st-switch.on::after { transform: translateX(18px); background: #fff; }
+
+@media (max-width: 760px) {
+  .st-layout { flex-direction: column; }
+  .st-submenu { width: 100%; display: flex; overflow-x: auto; overflow-y: hidden;
+                border-right: none; border-bottom: 1px solid var(--border);
+                padding: 8px 10px; gap: 14px; }
+  .st-submenu > div { margin-bottom: 0; flex-shrink: 0; }
+  .st-main { padding: 12px; }
+  .pcs-btn { flex: 1 1 auto; }
+}

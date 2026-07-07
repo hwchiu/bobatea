@@ -6,7 +6,9 @@ export interface FieldDef {
   type: "text" | "number" | "select" | "fk";
   options?: string[]; hint?: string; default?: string;
 }
-export interface ScopeSchema { id: string; label: string; key_field?: string; fields: FieldDef[] }
+export interface ScopeBackend { type: "rdb" | "file"; format?: "json" | "yaml"; path?: string }
+export interface ScopeSchema { id: string; label: string; group?: string; key_field?: string;
+                               fields: FieldDef[]; backend?: ScopeBackend; builtin?: boolean }
 export interface SettingsSchema {
   company_master: ScopeSchema;
   providers: Record<string, ScopeSchema>;
@@ -56,3 +58,25 @@ export const settingsApi = {
       `/${scope}/upload`, { method: "POST", body: fd });
   },
 };
+
+
+// ── Admin / Personal / Export ──────────────────────────────
+export const adminApi = {
+  scopes: () => req<ScopeSchema[]>("/admin/scopes"),
+  upsertScope: (id: string, body: Partial<ScopeSchema>) =>
+    req<ScopeSchema>(`/admin/scopes/${encodeURIComponent(id)}`, { method: "PUT", body: JSON.stringify(body) }),
+  deleteScope: (id: string) =>
+    req(`/admin/scopes/${encodeURIComponent(id)}`, { method: "DELETE" }),
+};
+
+export interface PersonalData {
+  profile: Record<string, string>;
+  notifications: Record<string, boolean>;
+}
+export const personalApi = {
+  get: () => req<PersonalData>("/personal"),
+  put: (body: Partial<PersonalData>) => req<PersonalData>("/personal", { method: "PUT", body: JSON.stringify(body) }),
+};
+
+export const exportUrl = (scope: string, format: "json" | "yaml") =>
+  `${API_BASE}/api/settings/${scope}/export?format=${format}`;

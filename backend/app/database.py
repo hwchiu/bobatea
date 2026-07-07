@@ -103,3 +103,28 @@ class SystemParam(Base):
     value_type = Column(String(16), default="string")
     description = Column(Text, default="")
     updated_at = Column(DateTime, default=utcnow, onupdate=utcnow)
+
+
+class ScopeDef(Base):
+    """Settings scope（類別）定義 — Admin 介面可調整欄位與後端連結。
+    backend: {"type":"rdb"} 或 {"type":"file","format":"json"|"yaml","path":"..."}"""
+    __tablename__ = "scope_def"
+
+    scope_id = Column(String(64), primary_key=True)
+    group = Column(String(32), default="company_config")  # company_config | system
+    label = Column(String(128), default="")
+    key_field = Column(String(64), default="fab_code")
+    fields = Column(JSON, default=list)
+    backend = Column(JSON, default=dict)
+    builtin = Column(Integer, default=0)
+    updated_at = Column(DateTime, default=utcnow, onupdate=utcnow)
+
+
+class UserPref(Base):
+    """Personal 設定（profile / notifications）。"""
+    __tablename__ = "user_pref"
+
+    user_id = Column(String(64), primary_key=True, default="default")
+    profile = Column(JSON, default=dict)
+    notifications = Column(JSON, default=dict)
+    updated_at = Column(DateTime, default=utcnow, onupdate=utcnow)
