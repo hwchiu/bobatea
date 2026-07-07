@@ -61,7 +61,7 @@ PROVIDER_SCHEMAS: dict[str, dict[str, Any]] = {
         "id": "factset", "label": "FactSet",
         "fields": [
             {"key": "fab_code", "label": "Fab Code", "required": True, "type": "fk"},
-            {"key": "factset_entity_id", "label": "FactSet Entity ID", "required": True, "type": "text",
+            {"key": "factset_entity_id", "label": "FactSet ID", "required": True, "type": "text",
              "hint": "如 0FPWZZ-E"},
             {"key": "fsym_id", "label": "FSYM ID", "required": False, "type": "text",
              "hint": "FactSet permanent security identifier"},
@@ -75,6 +75,8 @@ PROVIDER_SCHEMAS: dict[str, dict[str, Any]] = {
         "id": "contify", "label": "Contify",
         "fields": [
             {"key": "fab_code", "label": "Fab Code", "required": True, "type": "fk"},
+            {"key": "company_name", "label": "Company Name", "required": True, "type": "text",
+             "hint": "新聞追蹤顯示名稱，供關鍵字 / watchlist 建檔使用"},
             {"key": "contify_company_id", "label": "Contify Company ID", "required": True, "type": "text"},
             {"key": "watchlist_id", "label": "Watchlist ID", "required": False, "type": "text"},
             {"key": "topics", "label": "Topics", "required": False, "type": "text",
