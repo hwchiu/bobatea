@@ -15,6 +15,7 @@ export function AdminPanel() {
   const [work, setWork] = useState<ScopeSchema | null>(null); // 編輯中副本
   const [msg, setMsg] = useState<{ text: string; ok: boolean } | null>(null);
   const [newId, setNewId] = useState("");
+  const [filter, setFilter] = useState("");
 
   const load = useCallback(() => {
     adminApi.scopes().then(s => {
@@ -79,17 +80,38 @@ export function AdminPanel() {
 
       {msg && <div className={`pcs-issue ${msg.ok ? "" : "error"}`}>{msg.text}</div>}
 
-      {/* Scope 清單 */}
-      <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 16 }}>
-        {scopes.map(s => (
-          <button key={s.id} className="pcs-btn" onClick={() => select(s.id)}
-                  style={sel === s.id ? { borderColor: "var(--accent)", color: "var(--accent)" } : undefined}>
-            {s.label || s.id}
-            {s.builtin ? <span className="pcs-hint" style={{ marginLeft: 4 }}>({t("st.builtin")})</span> : null}
-          </button>
-        ))}
-      </div>
+      <div className="adm-layout">
+        {/* 左：可搜尋、分組的 scope 清單（項目增多仍可維護） */}
+        <aside className="adm-list">
+          <input value={filter} onChange={e => setFilter(e.target.value)}
+                 placeholder={t("st.search_scope")} className="adm-search" />
+          {(["company_config", "system"] as const).map(g => {
+            const items = scopes.filter(s => s.group === g &&
+              (s.label || s.id).toLowerCase().includes(filter.toLowerCase()));
+            if (!items.length) return null;
+            return (
+              <div key={g} style={{ marginBottom: 12 }}>
+                <div className="adm-group">{g === "company_config" ? t("st.company_config") : t("st.system_parameter")}
+                  <span style={{ marginLeft: "auto", opacity: .6 }}>{items.length}</span>
+                </div>
+                {items.map(s => (
+                  <button key={s.id} onClick={() => select(s.id)}
+                          className={`adm-item ${sel === s.id ? "active" : ""}`}>
+                    <span className="adm-item-label">{s.label || s.id}</span>
+                    <span className="adm-item-meta">
+                      {s.fields.length}f · {s.backend?.type === "file" ? (s.backend.format ?? "file") : "rdb"}
+                      {s.builtin ? "" : " · custom"}
+                    </span>
+                  </button>
+                ))}
+              </div>
+            );
+          })}
+        </aside>
 
+        {/* 右：編輯區 */}
+        <div className="adm-detail">
+      {!work && <div className="pcs-hint" style={{ padding: 20 }}>{t("st.pick_scope")}</div>}
       {work && (
         <div style={{ display: "grid", gap: 16 }}>
           {/* 基本 + 後端連結 */}
@@ -205,6 +227,8 @@ export function AdminPanel() {
           </div>
         </div>
       )}
+        </div>
+      </div>
     </div>
   );
 }
