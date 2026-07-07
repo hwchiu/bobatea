@@ -67,3 +67,39 @@ def get_db():
         yield db
     finally:
         db.close()
+
+
+class CompanyMaster(Base):
+    __tablename__ = "company_master"
+
+    fab_code = Column(String(64), primary_key=True)
+    company_name = Column(String(256), default="")
+    company_short_name = Column(String(128), default="")
+    country = Column(String(64), default="")
+    region = Column(String(32), default="")
+    status = Column(String(16), default="active")
+    remark = Column(Text, default="")
+    updated_at = Column(DateTime, default=utcnow, onupdate=utcnow)
+
+
+class ProviderRecord(Base):
+    """各 data provider 的 mapping。attrs 為 schema-driven JSON，
+    欄位規格由 routers/settings.PROVIDER_SCHEMAS 定義與驗證。"""
+    __tablename__ = "provider_record"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    provider = Column(String(32), index=True)   # bloomberg | factset | contify | snp | dnb
+    fab_code = Column(String(64), index=True)
+    attrs = Column(JSON, default=dict)
+    updated_at = Column(DateTime, default=utcnow, onupdate=utcnow)
+
+
+class SystemParam(Base):
+    __tablename__ = "system_param"
+
+    param_key = Column(String(128), primary_key=True)
+    param_value = Column(Text, default="")
+    category = Column(String(32), default="general")
+    value_type = Column(String(16), default="string")
+    description = Column(Text, default="")
+    updated_at = Column(DateTime, default=utcnow, onupdate=utcnow)

@@ -7,7 +7,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from .database import init_db
-from .routers import connectors, dag, dryrun, proxy, usage
+from .routers import connectors, dag, dryrun, proxy, settings, usage
 
 app = FastAPI(title="bobatea API (tMIC Workspace)", version="0.2.0")
 
@@ -55,6 +55,7 @@ app.include_router(connectors.router, prefix="/api/connectors", tags=["connector
 app.include_router(dag.router, prefix="/api/dag", tags=["dag"])
 app.include_router(dryrun.router, prefix="/api/dryrun", tags=["dryrun"])
 app.include_router(usage.router, prefix="/api/usage", tags=["usage"])
+app.include_router(settings.router, prefix="/api/settings", tags=["settings"])
 
 
 @app.get("/api/health")
