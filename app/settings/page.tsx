@@ -1,16 +1,15 @@
-// app/settings/page.tsx — Settings：Company Config / System Parameter / Admin / Personal
-// Schema-driven + RWD + i18n（中/英切換）。?scope= 支援 TopBar personal 選單深連結。
+// app/settings/page.tsx — Settings：Company Config / System Parameter / Admin
+// Schema-driven + RWD + i18n（中/英切換）。
 "use client";
 
 import { Suspense, useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "next/navigation";
-import { Building2, Database, ShieldCheck, SlidersHorizontal, UserRound } from "lucide-react";
+import { Building2, Database, ShieldCheck, SlidersHorizontal } from "lucide-react";
 import { Header } from "@/components/layout/Header";
 import { settingsApi, type ScopeSchema, type SettingsSchema } from "@/lib/settingsClient";
 import { useI18n } from "@/lib/i18n";
 import { ScopeEditor } from "@/components/settings/ScopeEditor";
 import { AdminPanel } from "@/components/settings/AdminPanel";
-import { PersonalPanel } from "@/components/settings/PersonalPanel";
 
 export default function SettingsPage() {
   return (
@@ -31,7 +30,6 @@ function SettingsInner() {
     settingsApi.schema().then(setSchema).catch(e => setErr(String(e)));
   }, []);
 
-  // TopBar personal 選單深連結：?scope=personal_profile / personal_notifications / admin_scopes
   useEffect(() => {
     const q = params.get("scope");
     if (q) setScope(q);
@@ -63,17 +61,11 @@ function SettingsInner() {
           <TreeGroup icon={<ShieldCheck size={13} />} label={t("st.admin")}>
             <TreeItem id="admin_scopes" label={t("st.schema_manager")} active={scope} onSelect={setScope} />
           </TreeGroup>
-          <TreeGroup icon={<UserRound size={13} />} label={t("st.personal")}>
-            <TreeItem id="personal_profile" label={t("st.profile")} active={scope} onSelect={setScope} />
-            <TreeItem id="personal_notifications" label={t("st.notifications")} active={scope} onSelect={setScope} />
-          </TreeGroup>
         </nav>
 
         <main className="st-main">
           {err && <div className="pcs-issue error">{err}</div>}
           {scope === "admin_scopes" ? <AdminPanel />
-            : scope === "personal_profile" ? <PersonalPanel tab="profile" />
-            : scope === "personal_notifications" ? <PersonalPanel tab="notifications" />
             : scopeSchema ? <ScopeEditor key={scope} scope={scope} schema={scopeSchema}
                                          isProvider={!!schema?.providers[scope]} />
             : null}
