@@ -197,9 +197,9 @@ export function TopBar() {
               {/* Menu items */}
               {[
                 { label: "Profile Settings", icon: UserCog,
-                  action: () => { window.location.href = `${BASE}/settings/?scope=personal_profile`; } },
+                  action: () => { window.location.href = `${BASE}/personal/?tab=profile`; } },
                 { label: "Notifications", icon: Bell,
-                  action: () => { window.location.href = `${BASE}/settings/?scope=personal_notifications`; } },
+                  action: () => { window.location.href = `${BASE}/personal/?tab=notifications`; } },
                 { label: "Sign Out", action: () => {}, danger: true },
               ].map((item) => (
                 <button

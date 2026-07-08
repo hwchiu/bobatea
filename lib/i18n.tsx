@@ -58,6 +58,8 @@ const DICT: Record<string, { "zh-TW": string; en: string }> = {
   "st.notif_channel_email": { "zh-TW": "Email 頻道", en: "Email channel" },
   "st.notif_channel_slack": { "zh-TW": "Slack 頻道", en: "Slack channel" },
   "st.saved": { "zh-TW": "已儲存", en: "Saved" },
+  "st.search_scope": { "zh-TW": "搜尋類別…", en: "Search scopes…" },
+  "st.pick_scope": { "zh-TW": "從左側清單選擇一個類別進行編輯", en: "Select a scope from the list to edit" },
 };
 
 interface I18nCtx { lang: Lang; setLang: (l: Lang) => void; t: (key: string) => string }

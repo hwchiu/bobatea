@@ -388,3 +388,27 @@ body {
   .st-main { padding: 12px; }
   .pcs-btn { flex: 1 1 auto; }
 }
+
+/* ── Admin：master-detail scope 管理 ───────────── */
+.adm-layout { display: grid; grid-template-columns: 250px 1fr; gap: 16px; align-items: start; }
+.adm-list { border: 1px solid var(--border); border-radius: 8px; background: var(--bg-surface);
+            padding: 10px; max-height: calc(100vh - 220px); overflow-y: auto; }
+.adm-search { width: 100%; height: 30px; margin-bottom: 10px; background: var(--bg-elevated);
+              border: 1px solid var(--border); border-radius: 6px; color: var(--text-primary);
+              padding: 0 10px; font-size: 12.5px; }
+.adm-group { display: flex; align-items: center; gap: 6px; padding: 4px 6px; font-size: 10.5px;
+             letter-spacing: .4px; text-transform: uppercase; color: var(--text-muted); }
+.adm-item { display: flex; flex-direction: column; align-items: flex-start; gap: 2px; width: 100%;
+            padding: 7px 9px; margin-bottom: 2px; background: transparent; border: none;
+            border-radius: 6px; cursor: pointer; text-align: left; }
+.adm-item:hover { background: var(--bg-hover); }
+.adm-item.active { background: var(--bg-hover); outline: 1px solid var(--accent); }
+.adm-item-label { font-size: 13px; color: var(--text-primary); }
+.adm-item.active .adm-item-label { color: var(--accent); font-weight: 600; }
+.adm-item-meta { font-size: 10.5px; color: var(--text-muted); font-family: var(--font-mono, monospace); }
+.adm-detail { min-width: 0; }
+
+@media (max-width: 900px) {
+  .adm-layout { grid-template-columns: 1fr; }
+  .adm-list { max-height: 240px; }
+}
