@@ -1,12 +1,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Sun, Moon, Globe, BookOpen, ChevronDown } from "lucide-react";
+import { Sun, Moon, BookOpen, ChevronDown, UserCog, Bell } from "lucide-react";
+import { LangToggle } from "@/lib/i18n";
 
-const LANGUAGES = [
-  { code: "en", label: "English" },
-  { code: "zh-TW", label: "繁體中文" },
-];
+const BASE = process.env.NEXT_PUBLIC_BASE_PATH ?? "/bobatea";
 
 // Mock user — replace with real auth context in a later phase
 const MOCK_USER = {
@@ -19,8 +17,6 @@ const MOCK_USER = {
 
 export function TopBar() {
   const [dark, setDark] = useState(true);
-  const [lang, setLang] = useState("zh-TW");
-  const [langOpen, setLangOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
 
   useEffect(() => {
@@ -29,14 +25,8 @@ export function TopBar() {
     setDark(isDark);
     document.documentElement.classList.toggle("light", !isDark);
 
-    const storedLang = localStorage.getItem("tmic-lang");
-    if (storedLang) setLang(storedLang);
-
     // Close dropdowns on outside click
-    const close = () => {
-      setLangOpen(false);
-      setProfileOpen(false);
-    };
+    const close = () => setProfileOpen(false);
     document.addEventListener("click", close);
     return () => document.removeEventListener("click", close);
   }, []);
@@ -48,13 +38,7 @@ export function TopBar() {
     localStorage.setItem("tmic-theme", next ? "dark" : "light");
   };
 
-  const selectLang = (code: string) => {
-    setLang(code);
-    localStorage.setItem("tmic-lang", code);
-    setLangOpen(false);
-  };
 
-  const currentLang = LANGUAGES.find((l) => l.code === lang) ?? LANGUAGES[0];
 
   return (
     <header
@@ -108,59 +92,8 @@ export function TopBar() {
           <BookOpen size={15} />
         </TopBarButton>
 
-        {/* Language switcher */}
-        <div style={{ position: "relative" }}>
-          <TopBarButton
-            title="Language"
-            onClick={(e) => { e.stopPropagation(); setLangOpen((o) => !o); setProfileOpen(false); }}
-            active={langOpen}
-          >
-            <Globe size={15} />
-            <span style={{ fontSize: 11, fontWeight: 600, color: "var(--text-muted)", lineHeight: 1 }}>
-              {currentLang.code.toUpperCase().slice(0, 2)}
-            </span>
-            <ChevronDown size={11} style={{ color: "var(--text-muted)", opacity: 0.6 }} />
-          </TopBarButton>
-
-          {langOpen && (
-            <div
-              onClick={(e) => e.stopPropagation()}
-              style={{
-                position: "absolute",
-                top: "calc(100% + 6px)",
-                right: 0,
-                background: "var(--bg-elevated)",
-                border: "1px solid var(--border)",
-                borderRadius: 8,
-                minWidth: 140,
-                boxShadow: "0 8px 24px rgba(0,0,0,0.4)",
-                overflow: "hidden",
-                zIndex: 200,
-              }}
-            >
-              {LANGUAGES.map((l) => (
-                <button
-                  key={l.code}
-                  onClick={() => selectLang(l.code)}
-                  style={{
-                    display: "block",
-                    width: "100%",
-                    textAlign: "left",
-                    padding: "8px 14px",
-                    background: l.code === lang ? "rgba(91,133,232,0.15)" : "transparent",
-                    border: "none",
-                    color: l.code === lang ? "var(--accent)" : "var(--text-secondary)",
-                    fontSize: 13,
-                    cursor: "pointer",
-                    transition: "background 0.12s",
-                  }}
-                >
-                  {l.label}
-                </button>
-              ))}
-            </div>
-          )}
-        </div>
+        {/* Language switcher — 中/英 segmented（非下拉） */}
+        <LangToggle />
 
         {/* Dark / Light toggle */}
         <TopBarButton
@@ -177,7 +110,7 @@ export function TopBar() {
         <div style={{ position: "relative" }}>
           <button
             title={MOCK_USER.displayName}
-            onClick={(e) => { e.stopPropagation(); setProfileOpen((o) => !o); setLangOpen(false); }}
+            onClick={(e) => { e.stopPropagation(); setProfileOpen((o) => !o); }}
             style={{
               display: "flex",
               alignItems: "center",
@@ -263,8 +196,10 @@ export function TopBar() {
               </div>
               {/* Menu items */}
               {[
-                { label: "Profile Settings", action: () => {} },
-                { label: "Workspace Preferences", action: () => {} },
+                { label: "Profile Settings", icon: UserCog,
+                  action: () => { window.location.href = `${BASE}/settings/?scope=personal_profile`; } },
+                { label: "Notifications", icon: Bell,
+                  action: () => { window.location.href = `${BASE}/settings/?scope=personal_notifications`; } },
                 { label: "Sign Out", action: () => {}, danger: true },
               ].map((item) => (
                 <button
@@ -283,7 +218,9 @@ export function TopBar() {
                     transition: "background 0.12s",
                   }}
                 >
-                  {item.label}
+                  <span style={{ display: "inline-flex", alignItems: "center", gap: 8 }}>
+                    {"icon" in item && item.icon ? <item.icon size={13} /> : null}{item.label}
+                  </span>
                 </button>
               ))}
             </div>

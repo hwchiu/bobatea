@@ -23,6 +23,23 @@ app.add_middleware(
 def startup() -> None:
     init_db()
     _seed_examples()
+    _seed_company_master()
+
+
+def _seed_company_master() -> None:
+    """Company Master 為空時載入 59 大半導體/AI 公司（來源目前為 code base，未來切 DB）。"""
+    from .database import CompanyMaster, SessionLocal
+    from .seed_companies import load_seed_companies
+
+    db = SessionLocal()
+    try:
+        if db.query(CompanyMaster).count() > 0:
+            return
+        for c in load_seed_companies():
+            db.add(CompanyMaster(**c))
+        db.commit()
+    finally:
+        db.close()
 
 
 def _seed_examples() -> None:

@@ -1,3 +1,4 @@
+import { I18nProvider } from "@/lib/i18n";
 import type { Metadata } from "next";
 import "./globals.css";
 import { Shell } from "@/components/layout/Shell";
@@ -11,7 +12,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en">
       <body className="antialiased">
-        <Shell>{children}</Shell>
+        <I18nProvider><Shell>{children}</Shell></I18nProvider>
       </body>
     </html>
   );
