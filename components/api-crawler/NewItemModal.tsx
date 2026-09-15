@@ -331,13 +331,14 @@ function CollectionRow({
   onCancelNewFolder: () => void;
   onRequestNewFolder: () => void;
 }) {
-  if (node.kind !== "collection") return null;
-  const isSelected = selected.kind === "collection" && selected.id === node.id;
+  const isCollection = node.kind === "collection";
+  const isSelected = isCollection && selected.kind === "collection" && selected.id === node.id;
   const [open, setOpen] = useState(isSelected);
-  const folders = node.children.filter((c) => c.kind === "folder");
+  const folders = isCollection ? node.children.filter((c) => c.kind === "folder") : [];
 
   // Auto-expand when selected
   useEffect(() => { if (isSelected) setOpen(true); }, [isSelected]);
+  if (!isCollection) return null;
 
   return (
     <div>
@@ -449,11 +450,12 @@ function FolderRow({
   onSelect: (id: string, name: string) => void;
   depth?: number;
 }) {
-  if (node.kind === "request") return null;
-  const isSelected = selected.kind === "folder" && selected.id === node.id;
-  const subFolders = node.children.filter((c) => c.kind === "folder");
+  const isRequest = node.kind === "request";
+  const isSelected = !isRequest && selected.kind === "folder" && selected.id === node.id;
+  const subFolders = isRequest ? [] : node.children.filter((c) => c.kind === "folder");
   const [open, setOpen] = useState(false);
   const indent = depth * 18 + 10;
+  if (isRequest) return null;
 
   return (
     <div>

@@ -2,8 +2,8 @@
 // Schema-driven + RWD + i18n（中/英切換）。
 "use client";
 
-import { Suspense, useEffect, useMemo, useState } from "react";
-import { useSearchParams } from "next/navigation";
+import { Suspense, useCallback, useEffect, useMemo, useState } from "react";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Building2, Database, ShieldCheck, SlidersHorizontal } from "lucide-react";
 import { Header } from "@/components/layout/Header";
 import { settingsApi, type ScopeSchema, type SettingsSchema } from "@/lib/settingsClient";
@@ -21,19 +21,24 @@ export default function SettingsPage() {
 
 function SettingsInner() {
   const { t } = useI18n();
+  const router = useRouter();
+  const pathname = usePathname();
   const params = useSearchParams();
   const [schema, setSchema] = useState<SettingsSchema | null>(null);
-  const [scope, setScope] = useState<string>("company_master");
   const [err, setErr] = useState("");
 
   useEffect(() => {
     settingsApi.schema().then(setSchema).catch(e => setErr(String(e)));
   }, []);
 
-  useEffect(() => {
-    const q = params.get("scope");
-    if (q) setScope(q);
-  }, [params]);
+  const scope = params.get("scope") ?? "company_master";
+  const setScope = useCallback((nextScope: string) => {
+    const nextParams = new URLSearchParams(params.toString());
+    if (nextScope === "company_master") nextParams.delete("scope");
+    else nextParams.set("scope", nextScope);
+    const query = nextParams.toString();
+    router.replace(query ? `${pathname}?${query}` : pathname);
+  }, [params, pathname, router]);
 
   const scopeSchema: ScopeSchema | null = useMemo(() => {
     if (!schema) return null;

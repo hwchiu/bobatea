@@ -29,7 +29,7 @@ export function ScopeEditor({ scope, schema, isProvider }: {
 
   const notify = (text: string, ok = true) => { setMsg({ text, ok }); setTimeout(() => setMsg(null), 3500); };
 
-  const save = async (row: Row, isNew: boolean) => {
+  const save = async (row: Row) => {
     const key = String(row[keyField] ?? "").trim();
     if (!key) { notify(`${keyField} ${t("st.required")}`, false); return; }
     try {
@@ -112,13 +112,13 @@ export function ScopeEditor({ scope, schema, isProvider }: {
           <tbody>
             {draft && (
               <EditableRow fields={schema.fields} row={draft} keyField={keyField} isNew
-                onChange={setDraft} onSave={() => save(draft, true)} onCancel={() => setDraft(null)} />
+                onChange={setDraft} onSave={() => save(draft)} onCancel={() => setDraft(null)} />
             )}
             {rows.map(r => {
               const key = String(r[keyField]);
               return editKey === key ? (
                 <EditableRow key={key} fields={schema.fields} row={editRow} keyField={keyField}
-                  onChange={setEditRow} onSave={() => save(editRow, false)} onCancel={() => setEditKey(null)} />
+                  onChange={setEditRow} onSave={() => save(editRow)} onCancel={() => setEditKey(null)} />
               ) : (
                 <tr key={key} style={{ borderBottom: "1px solid var(--border)" }}>
                   {schema.fields.map(f => (
