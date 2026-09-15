@@ -1,10 +1,12 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useSyncExternalStore } from "react";
 import { Sun, Moon, BookOpen, ChevronDown, UserCog, Bell } from "lucide-react";
 import { LangToggle } from "@/lib/i18n";
 
 const BASE = process.env.NEXT_PUBLIC_BASE_PATH ?? "/bobatea";
+const THEME_STORAGE_KEY = "tmic-theme";
+const THEME_CHANGE_EVENT = "tmic-theme-change";
 
 // Mock user — replace with real auth context in a later phase
 const MOCK_USER = {
@@ -16,26 +18,20 @@ const MOCK_USER = {
 };
 
 export function TopBar() {
-  const [dark, setDark] = useState(true);
+  const dark = useSyncExternalStore(subscribeTheme, getThemeSnapshot, getThemeServerSnapshot);
   const [profileOpen, setProfileOpen] = useState(false);
 
   useEffect(() => {
-    const stored = localStorage.getItem("tmic-theme");
-    const isDark = stored ? stored === "dark" : true;
-    setDark(isDark);
-    document.documentElement.classList.toggle("light", !isDark);
-
-    // Close dropdowns on outside click
+    document.documentElement.classList.toggle("light", !dark);
     const close = () => setProfileOpen(false);
     document.addEventListener("click", close);
     return () => document.removeEventListener("click", close);
-  }, []);
+  }, [dark]);
 
   const toggleTheme = () => {
     const next = !dark;
-    setDark(next);
-    document.documentElement.classList.toggle("light", !next);
-    localStorage.setItem("tmic-theme", next ? "dark" : "light");
+    localStorage.setItem(THEME_STORAGE_KEY, next ? "dark" : "light");
+    window.dispatchEvent(new Event(THEME_CHANGE_EVENT));
   };
 
 
@@ -229,6 +225,25 @@ export function TopBar() {
       </div>
     </header>
   );
+}
+
+function subscribeTheme(onStoreChange: () => void) {
+  if (typeof window === "undefined") return () => {};
+  window.addEventListener("storage", onStoreChange);
+  window.addEventListener(THEME_CHANGE_EVENT, onStoreChange);
+  return () => {
+    window.removeEventListener("storage", onStoreChange);
+    window.removeEventListener(THEME_CHANGE_EVENT, onStoreChange);
+  };
+}
+
+function getThemeSnapshot() {
+  if (typeof window === "undefined") return true;
+  return localStorage.getItem(THEME_STORAGE_KEY) !== "light";
+}
+
+function getThemeServerSnapshot() {
+  return true;
 }
 
 // Reusable icon button

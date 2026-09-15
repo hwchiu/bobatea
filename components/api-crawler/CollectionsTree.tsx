@@ -3,7 +3,7 @@
 
 import { useState } from "react";
 import { ChevronRight, ChevronDown, Folder, FolderOpen, Plus } from "lucide-react";
-import type { CollectionNode, HttpMethod } from "@/lib/types";
+import type { CollectionNode } from "@/lib/types";
 
 interface CollectionsTreeProps {
   collections: CollectionNode[];

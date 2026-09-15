@@ -1,7 +1,7 @@
 // lib/i18n.tsx — 輕量 i18n：zh-TW / en 雙語，segmented 切換（非下拉選單）
 "use client";
 
-import { createContext, useCallback, useContext, useEffect, useState } from "react";
+import { createContext, useCallback, useContext, useSyncExternalStore } from "react";
 
 export type Lang = "zh-TW" | "en";
 
@@ -64,19 +64,37 @@ const DICT: Record<string, { "zh-TW": string; en: string }> = {
 
 interface I18nCtx { lang: Lang; setLang: (l: Lang) => void; t: (key: string) => string }
 const Ctx = createContext<I18nCtx>({ lang: "zh-TW", setLang: () => {}, t: k => k });
+const LANG_STORAGE_KEY = "tmic-lang";
+const LANG_CHANGE_EVENT = "tmic-lang-change";
 
 export function I18nProvider({ children }: { children: React.ReactNode }) {
-  const [lang, setLangState] = useState<Lang>("zh-TW");
-  useEffect(() => {
-    const stored = localStorage.getItem("tmic-lang");
-    if (stored === "en" || stored === "zh-TW") setLangState(stored);
-  }, []);
+  const lang = useSyncExternalStore(subscribeLang, getLangSnapshot, getLangServerSnapshot);
   const setLang = useCallback((l: Lang) => {
-    setLangState(l);
-    localStorage.setItem("tmic-lang", l);
+    localStorage.setItem(LANG_STORAGE_KEY, l);
+    window.dispatchEvent(new Event(LANG_CHANGE_EVENT));
   }, []);
   const t = useCallback((key: string) => DICT[key]?.[lang] ?? key, [lang]);
   return <Ctx.Provider value={{ lang, setLang, t }}>{children}</Ctx.Provider>;
+}
+
+function subscribeLang(onStoreChange: () => void) {
+  if (typeof window === "undefined") return () => {};
+  window.addEventListener("storage", onStoreChange);
+  window.addEventListener(LANG_CHANGE_EVENT, onStoreChange);
+  return () => {
+    window.removeEventListener("storage", onStoreChange);
+    window.removeEventListener(LANG_CHANGE_EVENT, onStoreChange);
+  };
+}
+
+function getLangSnapshot(): Lang {
+  if (typeof window === "undefined") return "zh-TW";
+  const stored = localStorage.getItem(LANG_STORAGE_KEY);
+  return stored === "en" || stored === "zh-TW" ? stored : "zh-TW";
+}
+
+function getLangServerSnapshot(): Lang {
+  return "zh-TW";
 }
 
 export const useI18n = () => useContext(Ctx);

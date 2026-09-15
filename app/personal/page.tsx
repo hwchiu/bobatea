@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense, useEffect, useState } from "react";
+import { Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { Header } from "@/components/layout/Header";
 import { PersonalPanel } from "@/components/settings/PersonalPanel";
@@ -17,11 +17,7 @@ export default function PersonalPage() {
 function PersonalInner() {
   const { t } = useI18n();
   const params = useSearchParams();
-  const [tab, setTab] = useState<"profile" | "notifications">("profile");
-
-  useEffect(() => {
-    setTab(params.get("tab") === "notifications" ? "notifications" : "profile");
-  }, [params]);
+  const tab = params.get("tab") === "notifications" ? "notifications" : "profile";
 
   return (
     <div style={{ display: "flex", flexDirection: "column", height: "100%" }}>
