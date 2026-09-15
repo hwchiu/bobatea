@@ -334,10 +334,8 @@ function CollectionRow({
   const isCollection = node.kind === "collection";
   const isSelected = isCollection && selected.kind === "collection" && selected.id === node.id;
   const [open, setOpen] = useState(isSelected);
+  const isOpen = open || isSelected;
   const folders = isCollection ? node.children.filter((c) => c.kind === "folder") : [];
-
-  // Auto-expand when selected
-  useEffect(() => { if (isSelected) setOpen(true); }, [isSelected]);
   if (!isCollection) return null;
 
   return (
@@ -367,9 +365,9 @@ function CollectionRow({
           onClick={(e) => { e.stopPropagation(); setOpen((o) => !o); }}
           style={{ background: "none", border: "none", cursor: "pointer", padding: 0, color: "var(--text-dim)", display: "flex", flexShrink: 0 }}
         >
-          {open ? <ChevronDown size={12} /> : <ChevronRight size={12} />}
+          {isOpen ? <ChevronDown size={12} /> : <ChevronRight size={12} />}
         </button>
-        {open
+        {isOpen
           ? <FolderOpen size={13} style={{ flexShrink: 0, color: isSelected ? "var(--accent)" : "var(--text-muted)" }} />
           : <Folder size={13} style={{ flexShrink: 0, color: isSelected ? "var(--accent)" : "var(--text-muted)" }} />}
         <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{node.name}</span>
@@ -379,7 +377,7 @@ function CollectionRow({
       </button>
 
       {/* Folders inside collection */}
-      {open && (
+      {isOpen && (
         <div>
           {folders.map((f) => (
             <FolderRow
