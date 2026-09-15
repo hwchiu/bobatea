@@ -2,12 +2,13 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-import { Code2, Briefcase, Settings } from "lucide-react";
+import { Building2, Code2, Briefcase, Settings } from "lucide-react";
 
 const BASE = "/bobatea";
 
 const NAV_ITEMS = [
   { path: "/api-crawler", icon: Code2,     label: "API Crawler" },
+  { path: "/company-identity", icon: Building2, label: "Company Identity" },
   { path: "/jobs",        icon: Briefcase, label: "My Jobs"     },
   { path: "/settings",    icon: Settings,  label: "Settings"    },
 ];
