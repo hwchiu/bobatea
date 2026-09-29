@@ -2,19 +2,14 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-import { Building2, Code2, Briefcase, Settings } from "lucide-react";
+import { useActiveWorkspace, getWorkspace } from "@/lib/workspace";
 
 const BASE = "/bobatea";
 
-const NAV_ITEMS = [
-  { path: "/api-crawler", icon: Code2,     label: "API Crawler" },
-  { path: "/company-identity", icon: Building2, label: "Company Identity" },
-  { path: "/jobs",        icon: Briefcase, label: "My Jobs"     },
-  { path: "/settings",    icon: Settings,  label: "Settings"    },
-];
-
 export function BottomNav() {
   const pathname = usePathname();
+  const workspace = getWorkspace(useActiveWorkspace(pathname));
+  const NAV_ITEMS = workspace.navCompact;
 
   return (
     <nav

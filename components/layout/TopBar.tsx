@@ -3,6 +3,7 @@
 import { useEffect, useState, useSyncExternalStore } from "react";
 import { Sun, Moon, BookOpen, ChevronDown, UserCog, Bell } from "lucide-react";
 import { LangToggle } from "@/lib/i18n";
+import { WorkspaceSwitch } from "./WorkspaceSwitch";
 
 const BASE = process.env.NEXT_PUBLIC_BASE_PATH ?? "/bobatea";
 const THEME_STORAGE_KEY = "tmic-theme";
@@ -50,6 +51,10 @@ export function TopBar() {
         zIndex: 100,
       }}
     >
+      {/* Workspace switch */}
+      <WorkspaceSwitch />
+      <div style={{ width: 1, height: 20, background: "var(--border)" }} />
+
       {/* Brand */}
       <div style={{ display: "flex", alignItems: "center", gap: 8, marginRight: "auto" }}>
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
