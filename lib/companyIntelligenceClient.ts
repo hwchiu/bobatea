@@ -56,7 +56,9 @@ export const companyIntelligenceApi = {
     const fallback = !master?.length || !mappings?.length;
     const sample = fallback ? await demos() : [];
     const companies = master?.length ? master : sample;
-    const records = mappings?.length ? mappings : sample.map((c) => ({ fab_code: c.fab_code, ...c.providers[provider.id] })).filter((r) => r[provider.key]);
+    const records: Row[] = mappings?.length ? mappings : sample.map((c): Row => ({
+      fab_code: c.fab_code, ...c.providers[provider.id],
+    })).filter((r) => r[provider.key]);
 
     return companies.flatMap((company): CompanyProfile[] => {
       const fabCode = String(company.fab_code ?? "");

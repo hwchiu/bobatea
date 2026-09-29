@@ -1046,6 +1046,13 @@ body {
   color: var(--text-primary); font-size: 15px;
 }
 .cs-search-box svg { color: var(--text-muted); flex-shrink: 0; }
+.cs-field-label { display: block; text-align: left; color: var(--text-muted); font-size: 12px; margin-bottom: 6px; }
+.cs-provider-select { display: block; width: 100%; margin-bottom: 12px; padding: 10px 12px; border-radius: 8px; }
+.cs-provider-select, .cc-company-form input, .cc-company-form select, .cc-company-form textarea {
+  background: var(--bg-elevated); color: var(--text-primary); border: 1px solid var(--border);
+}
+.cs-demo-note { font-size: 11px !important; margin: 10px 0 0 !important; }
+.cs-close { background: transparent; border: 0; color: var(--text-muted); cursor: pointer; }
 .cs-examples { margin-top: 10px; font-size: 11.5px; color: var(--text-muted); }
 .cs-examples button {
   border: none; background: none; color: var(--accent); cursor: pointer;
@@ -1109,6 +1116,20 @@ body {
 }
 .cs-resolved-hint { font-size: 11px; color: var(--text-muted); margin-top: 4px; }
 .cs-drawer-actions { margin-top: auto; display: flex; justify-content: flex-end; gap: 8px; }
+.cc-company-form { display: flex; flex-direction: column; gap: 7px; flex: 1; }
+.cc-company-form p { color: var(--text-muted); font-size: 12px; margin: 0 0 8px; }
+.cc-company-form label { margin: 7px 0 0; }
+.cc-company-form input, .cc-company-form select, .cc-company-form textarea {
+  width: 100%; border-radius: 7px; padding: 10px; font: inherit; font-size: 13px;
+}
+.cc-company-form textarea { resize: vertical; }
+.cc-company-form small { color: var(--text-muted); }
+.cc-company-form .cs-drawer-actions { padding-top: 18px; }
+.cc-company-form .cc-error { color: var(--error, #dc6262); }
+.cc-secondary-btn { background: transparent; border: 1px solid var(--border); color: var(--text-secondary); border-radius: 7px; padding: 8px 14px; cursor: pointer; }
+.cc-confirm { margin: auto 0; color: var(--text-primary); }
+.cc-confirm h3 { color: var(--success); }
+.cc-confirm p { line-height: 1.6; color: var(--text-secondary); }
 
 @media (max-width: 640px) {
   .cs-drawer { width: 100%; }

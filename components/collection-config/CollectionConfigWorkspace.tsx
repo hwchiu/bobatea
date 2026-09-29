@@ -2,14 +2,16 @@
 "use client";
 
 import { useState } from "react";
-import { Plus, X, Rocket, Trash2 } from "lucide-react";
+import { Plus, Rocket, Trash2 } from "lucide-react";
 import { useCollectionConfig, collectionConfigStore } from "@/lib/collectionConfigStore";
-import { companyIntelligenceApi } from "@/lib/companyIntelligenceClient";
-import type { CompanyProfile } from "@/lib/companyIntelligenceTypes";
+import { useI18n } from "@/lib/i18n";
+import CompanyForm from "./CompanyForm";
 
 const BASE = process.env.NEXT_PUBLIC_BASE_PATH ?? "/bobatea";
 
 export default function CollectionConfigWorkspace() {
+  const { lang } = useI18n();
+  const en = lang === "en";
   const entries = useCollectionConfig();
   const [selected, setSelected] = useState<string[]>([]);
   const [adding, setAdding] = useState(false);
@@ -31,14 +33,14 @@ export default function CollectionConfigWorkspace() {
       <div className="cc-toolbar">
         <div>
           <h2>Collection Config</h2>
-          <p>Manage companies included in data collection.</p>
+          <p>{en ? "Manage companies included in data collection." : "管理資料蒐集清單中的公司。"}</p>
         </div>
-        <button className="cc-add-btn" onClick={() => setAdding(true)}><Plus size={14} /> Add Company</button>
+        <button className="cc-add-btn" onClick={() => setAdding(true)}><Plus size={14} /> {en ? "Add Company" : "新增公司"}</button>
       </div>
 
       {entries.length === 0 ? (
         <div className="cc-empty">
-          No companies configured yet. Use <strong>Company Search</strong> or &ldquo;Add Company&rdquo; to resolve a provider identity and add it here.
+          {en ? "No companies configured yet. Use Company Search or Add Company to add one here." : "尚無公司。可從 Company Search 搜尋，或在此點選「新增公司」填寫資料。"}
         </div>
       ) : (
         <div className="st-tablewrap">
@@ -46,11 +48,11 @@ export default function CollectionConfigWorkspace() {
             <thead>
               <tr>
                 <th style={{ padding: "8px 10px" }}></th>
-                <th style={{ textAlign: "left", padding: "8px 10px", color: "var(--text-muted)", fontSize: 11 }}>Company</th>
-                <th style={{ textAlign: "left", padding: "8px 10px", color: "var(--text-muted)", fontSize: 11 }}>Provider</th>
-                <th style={{ textAlign: "left", padding: "8px 10px", color: "var(--text-muted)", fontSize: 11 }}>Identity</th>
-                <th style={{ textAlign: "left", padding: "8px 10px", color: "var(--text-muted)", fontSize: 11 }}>Dataset</th>
-                <th style={{ textAlign: "left", padding: "8px 10px", color: "var(--text-muted)", fontSize: 11 }}>Status</th>
+                <th style={{ textAlign: "left", padding: "8px 10px", color: "var(--text-muted)", fontSize: 11 }}>{en ? "Company" : "公司"}</th>
+                <th style={{ textAlign: "left", padding: "8px 10px", color: "var(--text-muted)", fontSize: 11 }}>{en ? "Provider" : "資料來源"}</th>
+                <th style={{ textAlign: "left", padding: "8px 10px", color: "var(--text-muted)", fontSize: 11 }}>{en ? "Identity" : "識別碼"}</th>
+                <th style={{ textAlign: "left", padding: "8px 10px", color: "var(--text-muted)", fontSize: 11 }}>{en ? "Category" : "資料類別"}</th>
+                <th style={{ textAlign: "left", padding: "8px 10px", color: "var(--text-muted)", fontSize: 11 }}>{en ? "Status" : "狀態"}</th>
                 <th style={{ padding: "8px 10px" }}></th>
               </tr>
             </thead>
@@ -63,15 +65,15 @@ export default function CollectionConfigWorkspace() {
                   <td style={{ padding: "8px 10px" }}>{e.companyName}</td>
                   <td style={{ padding: "8px 10px" }}>{e.providerLabel}</td>
                   <td style={{ padding: "8px 10px", fontFamily: "ui-monospace, monospace" }}>{e.identifier}</td>
-                  <td style={{ padding: "8px 10px", color: "var(--text-muted)" }}>{e.dataset}</td>
+                  <td style={{ padding: "8px 10px", color: "var(--text-muted)" }} title={e.parameters ? JSON.stringify(e.parameters) : ""}>{e.dataset}</td>
                   <td style={{ padding: "8px 10px" }}>
                     <span className={`cc-status ${e.status}`}>
-                      <span className="dot" /> {e.status === "ready" ? "Ready" : e.status === "queued" ? "Queued" : "Running"}
+                      <span className="dot" /> {en ? (e.status === "ready" ? "Ready" : e.status === "queued" ? "Queued" : "Running") : (e.status === "ready" ? "就緒" : e.status === "queued" ? "排程中" : "執行中")}
                     </span>
                   </td>
                   <td style={{ padding: "8px 10px" }}>
                     <button
-                      title="Remove"
+                      title={en ? "Remove" : "移除"}
                       onClick={() => { collectionConfigStore.remove(e.id); setSelected((s) => s.filter((x) => x !== e.id)); }}
                       style={{ background: "none", border: "none", cursor: "pointer", color: "var(--text-muted)" }}
                     >
@@ -92,121 +94,13 @@ export default function CollectionConfigWorkspace() {
           </span>
           <button className="cc-run-btn" disabled={selected.length === 0} onClick={startRun}>
             <Rocket size={14} style={{ marginRight: 6, verticalAlign: -2 }} />
-            Run Collection
+            {en ? "Run Collection" : "執行蒐集"}
           </button>
         </div>
       )}
 
-      {adding && <AddCompanyDrawer onClose={() => setAdding(false)} />}
+      {adding && <CompanyForm onClose={() => setAdding(false)} />}
       {run && <RunResultModal ids={run.ids} runId={run.runId} entries={entries} onClose={() => setRun(null)} />}
-    </div>
-  );
-}
-
-function AddCompanyDrawer({ onClose }: { onClose: () => void }) {
-  const [query, setQuery] = useState("");
-  const [results, setResults] = useState<CompanyProfile[]>([]);
-  const [profile, setProfile] = useState<CompanyProfile | null>(null);
-  const [providerId, setProviderId] = useState("");
-
-  const search = (q: string) => {
-    setQuery(q);
-    setProfile(null);
-    if (!q.trim()) { setResults([]); return; }
-    companyIntelligenceApi.search(q).then(setResults);
-  };
-
-  const identity = profile?.identities.find((i) => i.providerId === providerId);
-
-  const add = () => {
-    if (!profile || !identity) return;
-    collectionConfigStore.add({
-      fabCode: profile.fabCode,
-      companyName: profile.name,
-      providerId: identity.providerId,
-      providerLabel: identity.providerLabel,
-      identifier: identity.primaryValue,
-      dataset: "Company Profile",
-    });
-    onClose();
-  };
-
-  return (
-    <div className="cs-overlay" onClick={onClose}>
-      <div className="cs-drawer" onClick={(e) => e.stopPropagation()}>
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-          <h2>Add Company</h2>
-          <button onClick={onClose} style={{ background: "none", border: "none", cursor: "pointer", color: "var(--text-muted)" }}>
-            <X size={18} />
-          </button>
-        </div>
-
-        {!profile && (
-          <div>
-            <label>Find company</label>
-            <input
-              autoFocus
-              className="adm-search"
-              placeholder="Search company name, ticker, DUNS…"
-              value={query}
-              onChange={(e) => search(e.target.value)}
-            />
-            <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-              {results.map((r) => (
-                <button
-                  key={r.fabCode}
-                  onClick={() => { setProfile(r); setProviderId(r.identities[0]?.providerId ?? ""); }}
-                  style={{
-                    textAlign: "left", background: "var(--bg-elevated)", border: "1px solid var(--border)",
-                    borderRadius: 8, padding: "9px 11px", cursor: "pointer", color: "var(--text-primary)", fontSize: 13,
-                  }}
-                >
-                  {r.name} <span style={{ color: "var(--text-muted)", fontSize: 11.5 }}>· {r.fabCode}</span>
-                </button>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {profile && (
-          <>
-            <div>
-              <label>Company</label>
-              <div style={{ fontSize: 14, fontWeight: 600, color: "var(--text-primary)" }}>{profile.name}</div>
-            </div>
-            <div>
-              <label>Data Provider</label>
-              {profile.identities.map((id) => (
-                <div
-                  key={id.providerId}
-                  className={`cs-provider-option${providerId === id.providerId ? " active" : ""}`}
-                  onClick={() => setProviderId(id.providerId)}
-                >
-                  <input type="radio" readOnly checked={providerId === id.providerId} />
-                  {id.providerLabel}
-                </div>
-              ))}
-            </div>
-            {identity && (
-              <div>
-                <label>{identity.primaryField}</label>
-                <div className="cs-resolved-box"><span>{identity.primaryValue}</span></div>
-                <div className="cs-resolved-hint">Automatically resolved</div>
-              </div>
-            )}
-            <div className="cs-drawer-actions">
-              <button
-                onClick={() => setProfile(null)}
-                style={{ background: "transparent", border: "1px solid var(--border)", color: "var(--text-secondary)",
-                         borderRadius: 7, padding: "8px 14px", fontSize: 12.5, cursor: "pointer" }}
-              >
-                Back
-              </button>
-              <button className="cs-configure-btn" onClick={add} disabled={!identity}>Add to Collection</button>
-            </div>
-          </>
-        )}
-      </div>
     </div>
   );
 }
