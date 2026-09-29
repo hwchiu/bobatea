@@ -26,6 +26,7 @@ export interface CollectionEntry {
   providerLabel: string;
   identifier: string;
   dataset: string;
+  parameters?: Record<string, string>;
   status: "ready" | "queued" | "running";
   addedAt: string; // ISO
 }

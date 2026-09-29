@@ -1,4 +1,4 @@
-// components/layout/WorkspaceSwitch.tsx — Workspace switch dropdown, placed left of the tMIC logo.
+// components/layout/WorkspaceSwitch.tsx — Workspace switch dropdown.
 "use client";
 
 import { useState } from "react";

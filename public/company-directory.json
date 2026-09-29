@@ -1,0 +1,41 @@
+{
+  "description": "Illustrative demo identifiers only. Not verified provider mappings; replace with licensed provider data before production use.",
+  "companies": [
+    {
+      "fab_code": "TSMC",
+      "company_name": "Taiwan Semiconductor Manufacturing Co.",
+      "company_short_name": "TSMC",
+      "country": "Taiwan",
+      "region": "APAC",
+      "providers": {
+        "bloomberg": { "bbg_id": "BBG000B1TP18", "ticker": "2330" },
+        "dnb": { "duns_number": "652063688" },
+        "pitchbook": { "pitchbook_id": "DEMO-PB-TSMC" }
+      }
+    },
+    {
+      "fab_code": "NVDA",
+      "company_name": "NVIDIA Corporation",
+      "company_short_name": "NVIDIA",
+      "country": "United States",
+      "region": "AMER",
+      "providers": {
+        "bloomberg": { "bbg_id": "BBG000BBJQV0", "ticker": "NVDA" },
+        "dnb": { "duns_number": "148660972" },
+        "pitchbook": { "pitchbook_id": "DEMO-PB-NVDA" }
+      }
+    },
+    {
+      "fab_code": "ASML",
+      "company_name": "ASML Holding N.V.",
+      "company_short_name": "ASML",
+      "country": "Netherlands",
+      "region": "EMEA",
+      "providers": {
+        "bloomberg": { "bbg_id": "BBG000BPFHV6", "ticker": "ASML" },
+        "dnb": { "duns_number": "400130124" },
+        "pitchbook": { "pitchbook_id": "DEMO-PB-ASML" }
+      }
+    }
+  ]
+}
