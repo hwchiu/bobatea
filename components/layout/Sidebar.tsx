@@ -2,20 +2,13 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-import { Building2, Code2, Briefcase, Settings, Sparkles } from "lucide-react";
+import { useActiveWorkspace, getWorkspace } from "@/lib/workspace";
 
 const BASE = "/bobatea";
 
-const NAV_ITEMS = [
-  { path: "/api-crawler", icon: Code2,     label: "API Crawler" },
-  { path: "/ai-crawler",  icon: Sparkles,  label: "AI Crawler"  },
-  { path: "/company-identity", icon: Building2, label: "Company Identity" },
-  { path: "/jobs",        icon: Briefcase, label: "My Jobs"     },
-  { path: "/settings",    icon: Settings,  label: "Settings"    },
-];
-
 export function Sidebar() {
   const pathname = usePathname(); // returns path WITHOUT basePath, e.g. "/api-crawler"
+  const workspace = getWorkspace(useActiveWorkspace(pathname));
 
   return (
     <aside
@@ -31,7 +24,7 @@ export function Sidebar() {
       }}
     >
       <nav style={{ flex: 1, padding: "10px 8px" }}>
-        {NAV_ITEMS.map(({ path, icon: Icon, label }) => {
+        {workspace.nav.map(({ path, icon: Icon, label }) => {
           const active = pathname.startsWith(path);
           // Use plain <a> with absolute path to avoid Next.js basePath double-prepend
           return (
