@@ -31,6 +31,15 @@ DEFAULT_COMPANY_MASTER = {
 }
 
 DEFAULT_PROVIDERS: dict[str, dict[str, Any]] = {
+    "pitchbook": {
+        "id": "pitchbook", "label": "PitchBook",
+        "fields": [
+            {"key": "fab_code", "label": "Fab Code", "required": True, "type": "fk"},
+            {"key": "pitchbook_id", "label": "PitchBook ID", "required": True, "type": "text"},
+            {"key": "status", "label": "Status", "required": False, "type": "select",
+             "options": ["active", "inactive"], "default": "active"},
+        ],
+    },
     "bloomberg": {
         "id": "bloomberg", "label": "Bloomberg",
         "fields": [

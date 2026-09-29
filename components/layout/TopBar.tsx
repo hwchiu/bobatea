@@ -51,12 +51,8 @@ export function TopBar() {
         zIndex: 100,
       }}
     >
-      {/* Workspace switch */}
-      <WorkspaceSwitch />
-      <div style={{ width: 1, height: 20, background: "var(--border)" }} />
-
       {/* Brand */}
-      <div style={{ display: "flex", alignItems: "center", gap: 8, marginRight: "auto" }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
           <rect x="2" y="2" width="9" height="9" rx="2" fill="var(--accent)" opacity="0.9" />
           <rect x="13" y="2" width="9" height="9" rx="2" fill="var(--accent)" opacity="0.5" />
@@ -81,6 +77,9 @@ export function TopBar() {
           PHASE 1
         </span>
       </div>
+      <div style={{ width: 1, height: 20, background: "var(--border)" }} />
+      <WorkspaceSwitch />
+      <div style={{ flex: 1 }} />
 
       {/* Right icon group */}
       <div className="topbar-right" style={{ display: "flex", alignItems: "center", gap: 4 }}>
