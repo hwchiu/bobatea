@@ -22,10 +22,10 @@
   --method-patch:   #b388e8;
   --method-delete:  #e06060;
   /* Collected-state signal (Company Search coverage badge) */
-  --cs-teal:        #4fd1c5;
-  --cs-teal-bg:     rgba(79, 209, 197, 0.12);
-  --cs-teal-border: rgba(79, 209, 197, 0.35);
-  --cs-teal-track:  rgba(79, 209, 197, 0.25);
+  --cs-teal:        #0b7268;
+  --cs-teal-bg:     #e6f6f4;
+  --cs-teal-border: #c5e8e3;
+  --cs-teal-track:  #c5e8e3;
 }
 
 /* ─── Method badges ─── */
@@ -1065,7 +1065,7 @@ body {
 }
 .cs-results { max-width: 880px; margin: 0 auto; display: flex; flex-direction: column; gap: 16px; }
 .cs-empty { max-width: 880px; margin: 0 auto; text-align: center; color: var(--text-muted); font-size: 13px; padding: 30px 0; }
-.cs-card { border: 1px solid var(--border); border-radius: 12px; background: var(--bg-surface); padding: 18px 20px; }
+.cs-card { border: 1px solid var(--border); border-left: 3px solid var(--cs-teal); border-radius: 12px; background: var(--bg-surface); padding: 18px 20px; }
 .cs-card-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
 .cs-card-title { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
 .cs-card-title h3 { margin: 0; font-size: 16px; color: var(--text-primary); }
@@ -1076,6 +1076,7 @@ body {
   background: var(--accent); color: #fff; border: none; border-radius: 7px;
   padding: 8px 14px; font-size: 12.5px; font-weight: 600; cursor: pointer; white-space: nowrap;
 }
+.cs-configure-btn.add-more { background: #fff; color: var(--accent); }
 .cs-identity-grid { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
 /* One identity per row-item: label and value sit on a single baseline. */
 .cs-identity-card {
@@ -1094,7 +1095,6 @@ body {
 .cs-identity-status { font-size: 11px; color: var(--text-muted); }
 
 /* Data-category coverage badge */
-.cs-card.collected { border-left: 3px solid var(--cs-teal); }
 .cs-coverage { margin-top: 14px; }
 .cs-cov-badge {
   display: inline-flex; align-items: center; gap: 9px;
