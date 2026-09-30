@@ -87,7 +87,7 @@ export default function CompanySearchWorkspace() {
                 <h3>{profile.name}</h3>
                 <p className="cs-card-meta">{profile.country} · {profile.region} · {profile.fabCode}</p>
               </div>
-              <button className="cs-configure-btn" onClick={() => setConfiguring(profile)}>
+              <button className={`cs-configure-btn${collected.size ? " add-more" : ""}`} onClick={() => setConfiguring(profile)}>
                 {collected.size ? (en ? "+ Add more" : "+ 補收類別") : (en ? "+ Add Company" : "+ 新增公司")}
               </button>
             </div>
