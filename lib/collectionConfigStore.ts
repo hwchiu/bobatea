@@ -63,6 +63,15 @@ export const collectionConfigStore = {
     return full;
   },
 
+  update(id: string, entry: Omit<CollectionEntry, "id" | "status" | "addedAt">): boolean {
+    const existing = read();
+    const fabCode = entry.fabCode.startsWith("manual:") ? `manual:${entry.providerId}:${entry.identifier}` : entry.fabCode;
+    const nextId = `${fabCode}::${entry.providerId}`;
+    if (existing.some((e) => e.id === nextId && e.id !== id)) return false;
+    write(existing.map((e) => e.id === id ? { ...e, ...entry, fabCode, id: nextId } : e));
+    return true;
+  },
+
   remove(id: string): void {
     write(read().filter((e) => e.id !== id));
   },

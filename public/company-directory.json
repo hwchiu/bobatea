@@ -26,6 +26,36 @@
       }
     },
     {
+      "fab_code": "AAPL",
+      "company_name": "Apple Inc.",
+      "company_short_name": "Apple",
+      "country": "United States",
+      "region": "AMER",
+      "providers": {
+        "bloomberg": { "bbg_id": "DEMO-BBG-AAPL", "ticker": "AAPL" },
+        "dnb": { "duns_number": "DEMO-DNB-AAPL" },
+        "pitchbook": { "pitchbook_id": "DEMO-PB-AAPL" },
+        "factset": { "factset_entity_id": "DEMO-FS-AAPL" },
+        "snp": { "spciq_id": "DEMO-SNP-AAPL" },
+        "contify": { "contify_company_id": "DEMO-CFY-AAPL" }
+      }
+    },
+    {
+      "fab_code": "AMD",
+      "company_name": "Advanced Micro Devices, Inc.",
+      "company_short_name": "AMD",
+      "country": "United States",
+      "region": "AMER",
+      "providers": {
+        "bloomberg": { "bbg_id": "DEMO-BBG-AMD", "ticker": "AMD" },
+        "dnb": { "duns_number": "DEMO-DNB-AMD" },
+        "pitchbook": { "pitchbook_id": "DEMO-PB-AMD" },
+        "factset": { "factset_entity_id": "DEMO-FS-AMD" },
+        "snp": { "spciq_id": "DEMO-SNP-AMD" },
+        "contify": { "contify_company_id": "DEMO-CFY-AMD" }
+      }
+    },
+    {
       "fab_code": "ASML",
       "company_name": "ASML Holding N.V.",
       "company_short_name": "ASML",

@@ -47,7 +47,7 @@ export default function CompanySearchWorkspace() {
     <div className="cs-page">
       <div className="cs-hero">
         <h1>Company Intelligence</h1>
-        <p>{en ? "Choose a provider, then search its company identifiers." : "先選擇資料來源，再搜尋該來源的公司識別碼。"}</p>
+        <p>{en ? "Choose a provider, then search by company name or short name." : "先選擇資料來源，再以公司名稱或簡稱搜尋。"}</p>
         <label className="cs-field-label" htmlFor="search-provider">{en ? "Data Provider" : "資料來源"}</label>
         <select className="cs-provider-select" id="search-provider" value={provider} onChange={(e) => updateProvider(e.target.value)}>
           {PROVIDERS.map((p) => <option key={p.id} value={p.id}>{p.label}</option>)}
@@ -56,7 +56,7 @@ export default function CompanySearchWorkspace() {
           <Search size={18} />
           <input
             aria-label={en ? "Search company" : "搜尋公司"}
-            placeholder={en ? "Company name, ticker, DUNS or provider ID…" : "公司名稱、Ticker、DUNS 或資料來源識別碼…"}
+            placeholder={en ? "Company name or short name…" : "公司名稱或簡稱…"}
             value={query}
             onChange={(e) => updateQuery(e.target.value)}
           />

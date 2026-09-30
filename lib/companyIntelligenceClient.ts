@@ -31,12 +31,12 @@ async function demos(): Promise<DemoCompany[]> {
 
 async function rows(path: string): Promise<Row[] | null> {
   try {
-    const res = await fetch(`${API_BASE}/api/settings${path}`);
-    if (isMissingBackendResponse(res) || (path.includes("/providers/pitchbook/") && res.status === 404)) return null;
+    const res = await fetch(`${API_BASE}/api/settings${path}`, { signal: AbortSignal.timeout(5000) });
+    if (isMissingBackendResponse(res) || res.status === 404) return null;
     if (!res.ok) throw new Error(`${res.status}: ${await res.text()}`);
     return res.json();
   } catch (error) {
-    if (isUnavailableBackendError(error)) return null;
+    if (isUnavailableBackendError(error) || (error instanceof Error && error.name === "TimeoutError")) return null;
     throw error;
   }
 }
@@ -55,10 +55,10 @@ export const companyIntelligenceApi = {
     ]);
     const fallback = !master?.length || !mappings?.length;
     const sample = fallback ? await demos() : [];
-    const companies = master?.length ? master : sample;
-    const records: Row[] = mappings?.length ? mappings : sample.map((c): Row => ({
+    const companies = fallback ? sample : master!;
+    const records: Row[] = fallback ? sample.map((c): Row => ({
       fab_code: c.fab_code, ...c.providers[provider.id],
-    })).filter((r) => r[provider.key]);
+    })).filter((r) => r[provider.key]) : mappings!;
 
     return companies.flatMap((company): CompanyProfile[] => {
       const fabCode = String(company.fab_code ?? "");
@@ -74,8 +74,7 @@ export const companyIntelligenceApi = {
         status: row.status === "inactive" ? "inactive" : "active",
       };
       const matches = [
-        company.company_name, company.company_short_name, fabCode,
-        identity.primaryValue, ...identity.secondary!.map((s) => s.value),
+        company.company_name, company.company_short_name,
       ].some((v) => String(v ?? "").toLowerCase().includes(q));
       return matches ? [{
         fabCode, name: String(company.company_name ?? fabCode),
