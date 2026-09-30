@@ -1076,7 +1076,7 @@ body {
   background: var(--accent); color: #fff; border: none; border-radius: 7px;
   padding: 8px 14px; font-size: 12.5px; font-weight: 600; cursor: pointer; white-space: nowrap;
 }
-.cs-configure-btn.add-more { background: #fff; color: var(--accent); }
+.cs-configure-btn.add-more { background: #fff; color: var(--accent); border: 1px solid #4f46e5; }
 .cs-identity-grid { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
 /* One identity per row-item: label and value sit on a single baseline. */
 .cs-identity-card {
