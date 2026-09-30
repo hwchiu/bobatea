@@ -54,7 +54,7 @@ export function useCollectionConfig(): CollectionEntry[] {
 
 export const collectionConfigStore = {
   add(entry: Omit<CollectionEntry, "id" | "status" | "addedAt">): CollectionEntry {
-    const id = `${entry.fabCode}::${entry.providerId}`;
+    const id = `${entry.fabCode}::${entry.providerId}::${entry.dataset}`;
     const existing = read();
     const already = existing.find((e) => e.id === id);
     if (already) return already;
@@ -66,7 +66,7 @@ export const collectionConfigStore = {
   update(id: string, entry: Omit<CollectionEntry, "id" | "status" | "addedAt">): boolean {
     const existing = read();
     const fabCode = entry.fabCode.startsWith("manual:") ? `manual:${entry.providerId}:${entry.identifier}` : entry.fabCode;
-    const nextId = `${fabCode}::${entry.providerId}`;
+    const nextId = `${fabCode}::${entry.providerId}::${entry.dataset}`;
     if (existing.some((e) => e.id === nextId && e.id !== id)) return false;
     write(existing.map((e) => e.id === id ? { ...e, ...entry, fabCode, id: nextId } : e));
     return true;

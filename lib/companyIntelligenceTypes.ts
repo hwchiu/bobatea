@@ -19,7 +19,7 @@ export interface CompanyProfile {
 }
 
 export interface CollectionEntry {
-  id: string;              // `${fabCode}::${providerId}`
+  id: string;              // `${fabCode}::${providerId}::${dataset}`
   fabCode: string;
   companyName: string;
   providerId: string;

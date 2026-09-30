@@ -7,7 +7,7 @@ import { PROVIDERS } from "@/lib/companyIntelligenceClient";
 import type { CollectionEntry, CompanyProfile } from "@/lib/companyIntelligenceTypes";
 import { collectionConfigStore } from "@/lib/collectionConfigStore";
 
-const CATEGORIES = ["Company Profile", "Company Filings", "News & Signals"];
+export const CATEGORIES = ["Company Profile", "Company Filings", "News & Signals"];
 
 export default function CompanyForm({ profile, providerId, entry, onClose }: {
   profile?: CompanyProfile; providerId?: string; entry?: CollectionEntry; onClose: () => void;
@@ -53,7 +53,7 @@ export default function CompanyForm({ profile, providerId, entry, onClose }: {
     };
     if (entry) {
       if (!collectionConfigStore.update(entry.id, data)) {
-        setError(en ? "This company and provider are already configured." : "此公司與資料來源已設定。");
+        setError(en ? "This company, provider and category are already configured." : "此公司、資料來源與資料類別已設定。");
         return;
       }
       onClose();

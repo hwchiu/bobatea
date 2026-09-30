@@ -1,11 +1,12 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { Search, X } from "lucide-react";
+import { useEffect, useState, type CSSProperties } from "react";
+import { ChevronDown, Check, Search, X } from "lucide-react";
 import { companyIntelligenceApi, PROVIDERS } from "@/lib/companyIntelligenceClient";
 import type { CompanyProfile } from "@/lib/companyIntelligenceTypes";
 import { useI18n } from "@/lib/i18n";
-import CompanyForm from "@/components/collection-config/CompanyForm";
+import CompanyForm, { CATEGORIES } from "@/components/collection-config/CompanyForm";
+import { useCollectionConfig } from "@/lib/collectionConfigStore";
 
 export default function CompanySearchWorkspace() {
   const { lang } = useI18n();
@@ -16,6 +17,8 @@ export default function CompanySearchWorkspace() {
   const [error, setError] = useState(false);
   const [loading, setLoading] = useState(false);
   const [configuring, setConfiguring] = useState<CompanyProfile | null>(null);
+  const [expanded, setExpanded] = useState<string | null>(null);
+  const entries = useCollectionConfig();
 
   useEffect(() => {
     if (!query.trim()) return;
@@ -71,26 +74,58 @@ export default function CompanySearchWorkspace() {
         <div className="cs-empty">{en ? "No company matched" : "查無公司"} &ldquo;{query}&rdquo;.</div>}
 
       <div className="cs-results">
-        {results.map((profile) => (
-          <div key={profile.fabCode} className="cs-card">
+        {results.map((profile) => {
+          const collected = new Set(
+            entries.filter((e) => e.fabCode === profile.fabCode && e.providerId === provider).map((e) => e.dataset),
+          );
+          const ratio = collected.size / CATEGORIES.length;
+          const open = expanded === profile.fabCode;
+          return (
+          <div key={profile.fabCode} className={`cs-card${collected.size ? " collected" : ""}`}>
             <div className="cs-card-head">
               <div>
                 <h3>{profile.name}</h3>
                 <p className="cs-card-meta">{profile.country} · {profile.region} · {profile.fabCode}</p>
               </div>
-              <button className="cs-configure-btn" onClick={() => setConfiguring(profile)}>{en ? "+ Add Company" : "+ 新增公司"}</button>
+              <button className="cs-configure-btn" onClick={() => setConfiguring(profile)}>
+                {collected.size ? (en ? "+ Add more" : "+ 補收類別") : (en ? "+ Add Company" : "+ 新增公司")}
+              </button>
             </div>
             <div className="cs-identity-grid">
               {profile.identities.map((id) => (
                 <div className="cs-identity-card" key={id.providerId}>
-                  <div className="cs-identity-provider">{id.providerLabel} · {id.primaryField}</div>
-                  <div className="cs-identity-value">{id.primaryValue}</div>
-                  {id.secondary?.map((item) => <div className="cs-identity-status" key={item.field}>{item.field}: {item.value}</div>)}
+                  <span className="cs-identity-provider">{id.providerLabel} · {id.primaryField}</span>
+                  <span className="cs-identity-value">{id.primaryValue}</span>
+                  {id.secondary?.map((item) => <span className="cs-identity-status" key={item.field}>{item.field}: {item.value}</span>)}
                 </div>
               ))}
             </div>
+            <div className="cs-coverage">
+              <button
+                type="button"
+                className="cs-cov-badge"
+                aria-expanded={open}
+                onClick={() => setExpanded(open ? null : profile.fabCode)}
+              >
+                <span className="cs-ring" style={{ "--cs-ring-turn": ratio } as CSSProperties} aria-hidden />
+                {en ? "Collected" : "已蒐集"}
+                <span className="cs-cov-count">{collected.size} / {CATEGORIES.length}</span>
+                <ChevronDown size={14} className={open ? "cs-chev open" : "cs-chev"} aria-hidden />
+              </button>
+              {open && (
+                <div className="cs-cov-detail">
+                  {CATEGORIES.map((category) => (
+                    <span key={category} className={collected.has(category) ? "cs-pill on" : "cs-pill off"}>
+                      {collected.has(category) && <Check size={12} aria-hidden />}
+                      {category}{collected.has(category) ? "" : en ? " · not collected" : " · 尚未蒐集"}
+                    </span>
+                  ))}
+                </div>
+              )}
+            </div>
           </div>
-        ))}
+          );
+        })}
       </div>
       {configuring && <CompanyForm profile={configuring} providerId={provider} onClose={() => setConfiguring(null)} />}
     </div>
