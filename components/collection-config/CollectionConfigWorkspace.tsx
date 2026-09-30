@@ -19,7 +19,7 @@ export default function CollectionConfigWorkspace() {
   const [run, setRun] = useState<{ ids: string[]; runId: string } | null>(null);
 
   const startRun = (id: string) => {
-    const runId = `COL-${new Date().toISOString().slice(0, 10).replace(/-/g, "")}-${Math.floor(Math.random() * 9000 + 1000)}`;
+    const runId = `COL-${crypto.randomUUID()}`;
     collectionConfigStore.setStatus([id], "running");
     setRun({ ids: [id], runId });
   };
